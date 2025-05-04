@@ -1,0 +1,14 @@
+REST api - project
+
+
+GET /users - respond with html
+GET /api/users - list all users
+
+GET/api/users/1 - list user info with id =1
+Dynamic path parameters 
+
+POST/api/users - create a user
+
+PATCH/api/users/1 - edit user with id =1
+
+DELETE/api/users/1 - delete user with id =1
