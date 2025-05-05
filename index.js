@@ -7,6 +7,12 @@ const PORT = 8000;
 
 app.use(express.urlencoded({extended: false}))
 
+app.use((req,res,next)=>{
+    fs.appendFile('log.txt', `${Date.now()} : ${req.method} : ${req.path}\n`, (err,data)=>{
+        next();
+    })
+})
+
 app.get("/users", (req,res)=>{
     const html =  `
     <ul>
@@ -20,14 +26,14 @@ app.get("/users", (req,res)=>{
 //REST API 
 
 app.get('/api/users', (req,res)=>{
-    res.json(users);
+    res.status(200).json(users);
 })
 
 app.route("/api/users/:id").get((req,res)=>{
     const id  = Number(req.params.id);
     const user = users.find((user)=>user.id === id);
     if (user == null){
-        return res.json({status : "user doesnt exist"})
+        return res.status(404).json({status : "user doesnt exist"})
     }
     res.send(user);
 })
@@ -60,7 +66,11 @@ app.route("/api/users/:id").get((req,res)=>{
 
 app.post("/api/users",(req,res)=>{
     
+    
     const body = req.body;
+    if(!body || !body.first_name || !body.last_name || !body.email || !body.gender || !body.job_title){
+        return res.status(400).json({msg : "all fields are req ..."})
+    }
     users.push({...body ,id: users.length+1})
     fs.writeFile("./MOCK_DATA.json",JSON.stringify(users),(err,data)=>{
          return res.json({status:"user added", id : users.length},)
